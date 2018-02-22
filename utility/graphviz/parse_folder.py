@@ -99,3 +99,8 @@ def parse_gen_folder(gen_folder):
     with open('output.cfg', 'w') as outfile:
         json.dump(gen_dict, outfile)
     return gen_dict
+
+def parse_desc_labels(gen_folder):
+    with open(gen_folder + '/../labels.json', 'r') as f:
+        data = json.load(f)
+    return data
