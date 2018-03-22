@@ -99,23 +99,23 @@ class ASInformation(object):
         border_routers = self.topology["BorderRouters"]
         for br in border_routers:
             neighbor_IA = self.get_neighbor_IA_interface(br)['IA']
-            ie = self.get_neighbor_IA_interface(br)['interface']
+            if_id = self.get_neighbor_IA_interface(br)['interface']
             n_isd = str(self.get_ISD_AS(neighbor_IA)._isd)
             n_as = str(self.get_ISD_AS(neighbor_IA)._as)
             if n_isd == self.ISD:
                 intra_isd_neighbor = \
-                    {'n_as': n_as, 'br-ip': border_routers[br]["Interfaces"][ie]["Public"]["Addr"], \
-                        'br-port': border_routers[br]["Interfaces"][ie]["Public"]["L4Port"],
-                    'remote-ip': border_routers[br]["Interfaces"][ie]["Remote"]["Addr"], 'remote-port': \
-                        border_routers[br]["Interfaces"][ie]["Remote"]["L4Port"]}
-                intra_dict[ie] = intra_isd_neighbor
+                    {'n_as': n_as, 'br-ip': border_routers[br]["Interfaces"][if_id]["Public"]["Addr"], \
+                        'br-port': border_routers[br]["Interfaces"][if_id]["Public"]["L4Port"],
+                    'remote-ip': border_routers[br]["Interfaces"][if_id]["Remote"]["Addr"], 'remote-port': \
+                        border_routers[br]["Interfaces"][if_id]["Remote"]["L4Port"]}
+                intra_dict[if_id] = intra_isd_neighbor
             else:
                 inter_isd_neighbor = \
-                    {'n_isd': n_isd, 'n_as': n_as, 'br-ip': border_routers[br]["Interfaces"][ie]["Public"]["Addr"], \
-                        'br-port': border_routers[br]["Interfaces"][ie]["Public"]["L4Port"],
-                    'remote-ip': border_routers[br]["Interfaces"][ie]["Remote"]["Addr"], 'remote-port': \
-                        border_routers[br]["Interfaces"][ie]["Remote"]["L4Port"]}
-                inter_dict[ie] = inter_isd_neighbor
+                    {'n_isd': n_isd, 'n_as': n_as, 'br-ip': border_routers[br]["Interfaces"][if_id]["Public"]["Addr"], \
+                        'br-port': border_routers[br]["Interfaces"][if_id]["Public"]["L4Port"],
+                    'remote-ip': border_routers[br]["Interfaces"][if_id]["Remote"]["Addr"], 'remote-port': \
+                        border_routers[br]["Interfaces"][if_id]["Remote"]["L4Port"]}
+                inter_dict[if_id] = inter_isd_neighbor
         return {'intra': intra_dict, 'inter': inter_dict}
 
     def get_neighbor_IA_interface(self, br):
@@ -286,7 +286,7 @@ class IsdGraph(object):
                 if self.AS_list[AS]["intra_n"][interface]["remote-port"] == port:
                     return (interface, port)
         return ('','')
-    
+
     def get_color(self):
         """
         Returns a random color from a selection
@@ -332,7 +332,6 @@ class IsdGraph(object):
             """
             for neighbor in self.AS["intra_n"]:
                 n_dict = self.AS["intra_n"][neighbor]
-                #br_id = str(n_dict["br-id"])
                 br_id = str(neighbor)
                 self.info_dict["br" + self.IA.__str__() + "-" + br_id] = n_dict["br-ip"]
                 if n_dict["br-ip"] not in self.rev_info_dict:
@@ -347,9 +346,8 @@ class IsdGraph(object):
             Gathers info for all inter isd border router elements
             and writes the info to the info and reverse info dict.
             """
-        
+
             for interface in self.AS["inter_n"]:
-                #n_dict = self.AS["inter_n"][interface]
                 interf_dict = self.AS["inter_n"][interface]
                 br_id = str(interface)
                 self.info_dict["br" + self.IA.__str__() + "-" + br_id] = interf_dict["br-ip"]

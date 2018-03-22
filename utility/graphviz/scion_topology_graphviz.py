@@ -14,6 +14,7 @@
 
 # Stdlib
 import sys
+import os
 import argparse
 import random
 from graphviz import Graph
@@ -49,7 +50,6 @@ def draw_isd_graph(ISD, AS_list, ip_addresses, location_labels, labels):
     # order is important such that core ASes end up on top
     c_neighbors = core_AS_list
     n_neighbors = graph_lib.draw_edges_from_current(c_neighbors, isd_graph, ip_addresses)
-    #n_neighbors = graph_lib.draw_edges_from_current(non_core_AS_list, isd_graph, edge_labels)
     # loop while some nodes dont have all their edges, add edges of nodes in current neighbors,
     # add nodes to next neighbors if they are not in ASes done,
     # not in next neighbors yet and not in current neighbors
@@ -162,7 +162,9 @@ def main():
     -o: path to the output file ex: output/scion_topo.gv
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('-g', '--gen_folder_path', default="gen",
+    parser.add_argument('-gp', '--gen_folder_path', default="gen",
+                        help='path to the gen folder')
+    parser.add_argument('-lp', '--label_file_path', default="",
                         help='path to the gen folder')
     parser.add_argument('-n', '--node_labels', action='store_true', default=False,
                         help='set this flag to add address/port information')
@@ -171,8 +173,17 @@ def main():
     parser.add_argument('-o', '--output_path', default="output/scion_topo.gv",
                         help='path to the output topology file')
     args = parser.parse_args()
-    topo = parse_gen_folder(args.gen_folder_path)
-    labels = parse_desc_labels(args.gen_folder_path)
+
+    if os.path.exists(args.gen_folder_path):
+        topo = parse_gen_folder(args.gen_folder_path)
+    else:
+        print ('Error: No gen folder found at ' + args.gen_folder_path)
+        return
+
+    if args.location_labels:
+        labels = parse_desc_labels(args.label_file_path)
+    else:
+        labels = {}
     dot = draw_SCION_topology(topo, args.node_labels, args.location_labels, labels)
     s = Source(dot, filename=dot.filename, format="pdf")
     s.render(directory=args.output_path)
