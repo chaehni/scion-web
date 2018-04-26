@@ -81,7 +81,7 @@ def draw_inter_ISD_edges(scion_graph, ISDs, node_labels):
 
 def draw_edges_for_as(ISDs, ISD, AS, ISDs_done, node_labels, scion_graph):
     AS_list = ISDs[ISD]["AS"]
-    ia = ISD_AS.from_values(ISD, AS)
+    ia = from_values(ISD, AS)
     id = ia.__str__()
     for interface in AS_list[AS]["inter_n"]:
         neighborISD = AS_list[AS]["inter_n"][interface]["n_isd"]
@@ -93,7 +93,7 @@ def draw_edges_for_as(ISDs, ISD, AS, ISDs_done, node_labels, scion_graph):
                 continue
             if neighborAS not in ISDs[neighborISD]["AS"]:
                 continue
-            n_ia = ISD_AS.from_values(neighborISD, neighborAS)
+            n_ia = from_values(neighborISD, neighborAS)
             n_id = n_ia.__str__()
             if node_labels:
                 color = get_color()
@@ -149,6 +149,8 @@ def draw_SCION_topology(topology_dict, n_labels, l_labels, desc_labels):
     dot = draw_inter_ISD_edges(dot, ISDs, n_labels)
     return dot
 
+def from_values(ISD, AS):
+    return ISD_AS.from_values(int(ISD), int(AS))
 
 def main():
     """

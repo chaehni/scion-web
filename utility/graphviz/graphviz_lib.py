@@ -226,7 +226,7 @@ class IsdGraph(object):
                 graphviz graph: graph to which we add the AS
                 dict labels: Dictionary containing labels for ISDs and ASes
         """
-        ia = ISD_AS.from_values(self.ISD, AS)
+        ia = self.from_values(AS)
         node_id = ia.__str__()
         node_name = self.AS_list[AS]["name"]
         node_name = ia.__str__() + node_name
@@ -250,7 +250,7 @@ class IsdGraph(object):
         next_neighbors = []
         for AS in current_neighbors:
             self.ASes_done.append(AS)
-            ia = ISD_AS.from_values(self.ISD, AS)
+            ia = self.from_values(AS)
             id = ia.__str__()
             for interface in self.AS_list[AS]["intra_n"]:
                 neighbor = self.AS_list[AS]["intra_n"][interface]["n_as"]
@@ -259,7 +259,7 @@ class IsdGraph(object):
                     continue
                 # check if interface connects to an AS we already handled
                 if neighbor not in self.ASes_done:
-                    n_ia = ISD_AS.from_values(self.ISD, neighbor)
+                    n_ia = self.from_values(neighbor)
                     n_id = n_ia.__str__()
                     if node_labels:
                         color = self.get_color()
@@ -294,6 +294,9 @@ class IsdGraph(object):
         colors = ['green', 'gold', 'indigo', 'orangered', 'crimson', \
             'magenta', 'darkslategray', 'greenyellow', 'hotpink', 'lightsalmon']
         return random.choice(colors)
+    
+    def from_values(self, AS):
+            return ISD_AS.from_values(int(self.ISD), int(AS))
 
     class NodeAttributes(object):
         """
@@ -307,7 +310,7 @@ class IsdGraph(object):
             self.AS = AS
             self.AS_n = AS_number
             self.ISD = ISD
-            self.IA = ISD_AS.from_values(self.ISD, self.AS_n)
+            self.IA = ISD_AS.from_values(int(self.ISD), int(self.AS_n))
             self.gather_non_br_info()
             self.gather_intra_br_info()
             self.gather_inter_br_info()
@@ -349,7 +352,7 @@ class IsdGraph(object):
 
             for interface in self.AS["inter_n"]:
                 interf_dict = self.AS["inter_n"][interface]
-                br_id = str(interface)
+                br_id = interface
                 self.info_dict["br" + self.IA.__str__() + "-" + br_id] = interf_dict["br-ip"]
                 if interf_dict["br-ip"] not in self.rev_info_dict:
                     self.rev_info_dict[interf_dict["br-ip"]] = \
