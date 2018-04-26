@@ -294,7 +294,7 @@ class IsdGraph(object):
         colors = ['green', 'gold', 'indigo', 'orangered', 'crimson', \
             'magenta', 'darkslategray', 'greenyellow', 'hotpink', 'lightsalmon']
         return random.choice(colors)
-    
+
     def from_values(self, AS):
             return ISD_AS.from_values(int(self.ISD), int(AS))
 
