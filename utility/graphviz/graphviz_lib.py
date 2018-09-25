@@ -226,7 +226,7 @@ class IsdGraph(object):
         if location_labels and ia.__str__() in labels['AS']:
             node_name += '\n' + labels['AS'][ia.__str__()]
         node_name += "\n"
-        node_attributes = self.NodeAttributes(self.AS_list[AS], AS, self.ISD)
+        node_attributes = self.NodeAttributes(self.AS_list[AS], ia)
         node_name = node_name + node_attributes.assemble_string()
         graph.node(node_id, node_name, _attributes={'shape': 'box'})
 
@@ -288,15 +288,13 @@ class IsdGraph(object):
         """
         Class to collect all attributes of an AS (br,ps,bs ..)
         """
-        def __init__(self, AS, AS_number, ISD):
+        def __init__(self, AS, ia):
             # ex: info_dict[br] = ip address of br
             # ex: reverse_info_dict[1.3.3.3] = ['zk', 'bs']
             self.info_dict = {}
             self.rev_info_dict = {}
             self.AS = AS
-            self.AS_n = AS_number
-            self.ISD = ISD
-            self.IA = ISD_AS("%s-%s" % (ISD, AS_number))
+            self.IA = ia
             self.gather_non_br_info()
             self.gather_intra_br_info()
             self.gather_inter_br_info()

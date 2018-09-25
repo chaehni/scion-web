@@ -148,9 +148,6 @@ def draw_SCION_topology(topology_dict, n_labels, l_labels, desc_labels):
     dot = draw_inter_ISD_edges(dot, ISDs, n_labels)
     return dot
 
-def from_values(ISD, AS):
-    return ISD_AS.from_values(int(ISD), int(AS))
-
 def main():
     """
     Draws the topology of the SCION network in a gen folder.
